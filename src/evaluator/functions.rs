@@ -3,6 +3,8 @@ use crate::bytecode;
 
 use std::collections::HashMap;
 
+const SAME_LINE: usize = 0;
+
 pub type InlineType = fn (&mut super::Evaluator, &ast::List) -> ();
 
 pub fn get_inlines() -> HashMap<String, InlineType> {
@@ -52,7 +54,7 @@ fn minus_inline(eve: &mut super::Evaluator, ast: &ast::List) {
         inline_helper_binary(eve, ast, bytecode::Op::Subtract)
     } else {
         inline_helper_parse_args(eve, ast);
-        eve.chunk.add_op(bytecode::Op::Negate, 0); // TODO: add line info
+        eve.chunk.add_op(bytecode::Op::Negate, SAME_LINE);
     }
 }
 
@@ -68,13 +70,13 @@ fn if_inline(eve: &mut super::Evaluator, ast: &ast::List) {
         false_arg = None;
     }
     eve.eval_s_expr_inner(condition_arg.expect(""));
-    eve.chunk.add_op(bytecode::Op::JumpTrue, 0); // TODO: add line info
-    let d1 = eve.chunk.add_op(bytecode::Op::from_lit(0), 0); // TODO: add line info
+    eve.chunk.add_op(bytecode::Op::JumpTrue, SAME_LINE);
+    let d1 = eve.chunk.add_op(bytecode::Op::from_lit(0), SAME_LINE);
     if let Some(arg) = false_arg {
         eve.eval_s_expr_inner(arg);
     }
-    eve.chunk.add_op(bytecode::Op::Jump, 0); // TODO: add line info
-    let d2 = eve.chunk.add_op(bytecode::Op::from_lit(0), 0); // TODO: add line info
+    eve.chunk.add_op(bytecode::Op::Jump, 0);
+    let d2 = eve.chunk.add_op(bytecode::Op::from_lit(0), SAME_LINE);
     eve.chunk.replace_instruction(d1, bytecode::Op::from_lit((d2 - d1) as u8));
 
     eve.eval_s_expr_inner(true_arg.expect(""));
@@ -88,14 +90,14 @@ fn inline_helper_comp(eve: &mut super::Evaluator, ast: &ast::List, opcode: bytec
     if count > 255 {
         panic!("Can't have more then 255 values in a comparision");
     }
-    eve.chunk.add_op(opcode, 0); // TOD): add line info
-    eve.chunk.add_op(bytecode::Op::from_lit(count as u8), 0); // TODO: add line info
+    eve.chunk.add_op(opcode, SAME_LINE);
+    eve.chunk.add_op(bytecode::Op::from_lit(count as u8), SAME_LINE);
 }
 
 fn inline_helper_binary(eve: &mut super::Evaluator, ast: &ast::List, opcode: bytecode::Op) {
     let count = inline_helper_parse_args(eve, ast);
     for _ in 0..(count - 1) {
-        eve.chunk.add_op(opcode, 0); // TODO: add line info
+        eve.chunk.add_op(opcode, SAME_LINE);
     }
 }
 

@@ -14,8 +14,8 @@ struct Node {
 
 #[derive(Debug)]
 pub enum AtomOrList {
-    Atom(Atom),
-    List(List),
+    Atom(Atom, usize),
+    List(List, usize),
 }
 
 #[derive(Debug)]

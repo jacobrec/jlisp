@@ -9,9 +9,16 @@ fn main() {
     let debug = true;
     let show_whole_code = true;
     let show_execution = true;
+    let show_ast = true;
 
-    let test = "(if (> 1 2) true false)";
-    if let Some(chunk) = evaluator::evaluate(reader::read(test)) {
+    let test = r###"
+(if (> 1 2)
+  true
+  false)
+        "###;
+    let ast = reader::read(test);
+    if debug && show_ast { dbg!(&ast); }
+    if let Some(chunk) = evaluator::evaluate(ast) {
 
         if debug && show_whole_code {
             println!("PRINTING WHOLE CODE");

@@ -108,7 +108,8 @@ impl Lexer {
     fn cur_no_white(&mut self) -> Option<char> {
         if let Some(c) = self.cur {
             if c.is_whitespace() {
-                return self.next()
+                self.next();
+                return self.cur_no_white()
             }
         }
         self.cur

@@ -24,9 +24,9 @@ impl Parser {
     fn parse_sexp(&mut self) -> AtomOrList {
         if let TokenType::LeftParen = self.cur.ttype {
             self.next();
-            return AtomOrList::List(self.parse_sexp_inner())
+            return AtomOrList::List(self.parse_sexp_inner(), self.cur.line)
         } else {
-            return AtomOrList::Atom(self.parse_atom())
+            return AtomOrList::Atom(self.parse_atom(), self.cur.line)
         }
     }
 

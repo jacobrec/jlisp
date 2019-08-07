@@ -37,14 +37,14 @@ impl Evaluator {
     }
     fn eval_s_expr_inner(&mut self, ast: &ast::AtomOrList) {
         match ast {
-            ast::AtomOrList::List(l) => self.eval_fn(l),
-            ast::AtomOrList::Atom(a) => self.eval_atom(a),
+            ast::AtomOrList::List(l, _) => self.eval_fn(l),
+            ast::AtomOrList::Atom(a, line) => self.eval_atom(a, *line),
         }
     }
 
     fn eval_fn(&mut self, ast: &ast::List) {
         let tail_tip = ast.tail_tip();
-        if let Some(ast::AtomOrList::Atom(ast::Atom::AIdentifier(cmd))) = tail_tip {
+        if let Some(ast::AtomOrList::Atom(ast::Atom::AIdentifier(cmd), _)) = tail_tip {
             if let Some(f) = self.inlined.get(cmd) {
                 f(self, ast);
             } else {
@@ -55,20 +55,20 @@ impl Evaluator {
         }
     }
 
-    fn eval_atom(&mut self, ast: &ast::Atom) {
+    fn eval_atom(&mut self, ast: &ast::Atom, line: usize) {
         match ast {
             ast::Atom::AInteger(v) => {
-                self.chunk.add_constant(bytecode::Value::VInt(*v), 0); // TODO: proper line numbers
+                self.chunk.add_constant(bytecode::Value::VInt(*v), line);
             },
             ast::Atom::AString(v) => {
-                self.chunk.add_constant(bytecode::Value::VString((*v).clone()), 0); // TODO: proper line numbers
+                self.chunk.add_constant(bytecode::Value::VString((*v).clone()), line);
             },
             ast::Atom::AIdentifier(_) => unimplemented!(),
             ast::Atom::ATrue => {
-                self.chunk.add_constant(bytecode::Value::VBool(true), 0); // TODO: proper line numbers
+                self.chunk.add_constant(bytecode::Value::VBool(true), line);
             },
             ast::Atom::AFalse => {
-                self.chunk.add_constant(bytecode::Value::VBool(false), 0); // TODO: proper line numbers
+                self.chunk.add_constant(bytecode::Value::VBool(false), line);
             },
         }
     }
