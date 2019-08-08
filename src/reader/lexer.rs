@@ -1,5 +1,5 @@
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum TokenType {
     LeftParen,
     RightParen,
@@ -114,4 +114,42 @@ impl Lexer {
         }
         self.cur
     }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use super::TokenType::*;
+
+    #[test]
+    fn test_1() {
+        let input = "1 2 3";
+        let expected = vec![Number(1), Number(2), Number(3)];
+        token_test(input, expected);
+    }
+
+    #[test]
+    fn test_2() {
+        let input = "(+ 1 2)";
+        let expected = vec![LeftParen, Identifier(String::from("+")), Number(1), Number(2), RightParen];
+        token_test(input, expected);
+    }
+
+    #[test]
+    fn test_3() {
+        let input = r#"(+ (+ "Hello, " "World!") "...")"#;
+        let expected = vec![LeftParen, Identifier(String::from("+")),
+            LeftParen, Identifier(String::from("+")), Str(String::from("Hello, ")),
+            Str(String::from("World!")), RightParen, Str(String::from("...")), RightParen];
+        token_test(input, expected);
+    }
+
+    fn token_test(input: &'static str, expected: Vec<TokenType>) {
+        let mut lex = new(input);
+        for x in expected {
+            assert_eq!(lex.next_token().expect("A token").ttype, x);
+        }
+        assert!(lex.next_token().is_none());
+    }
+
 }
