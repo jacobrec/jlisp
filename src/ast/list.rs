@@ -1,12 +1,12 @@
 use std::rc::Rc;
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct List<T> {
     head: Link<T>
 }
 
 type Link<T> = Option<Rc<Node<T>>>;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Node<T> {
     elm: T,
     next: Link<T>

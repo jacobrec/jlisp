@@ -5,6 +5,6 @@ mod parser;
 
 pub fn read(input: &'static str) -> Option<ast::ASTList> {
     let lex = lexer::new(input);
-    let mut parser = parser::new(lex);
+    let mut parser = parser::new(Box::from(lex));
     parser.parse()
 }

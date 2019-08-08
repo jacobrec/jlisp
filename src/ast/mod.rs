@@ -4,13 +4,13 @@ pub use list::List;
 
 pub type ASTList = list::List<AtomOrList>;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum AtomOrList {
     Atom(Atom, usize),
     List(List<AtomOrList>, usize),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Atom {
     AIdentifier(String),
     AString(String),
@@ -18,7 +18,9 @@ pub enum Atom {
     AInteger(isize),
     ATrue,
     AFalse,
+    AList(list::List<Atom>),
     // AVector(),
+    // AMap(),
     // AChar(char),
 }
 

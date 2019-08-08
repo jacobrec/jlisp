@@ -21,6 +21,10 @@ pub struct Lexer {
     cur: Option<char>,
 }
 
+pub trait Tokener {
+    fn next_token(&mut self) -> Option<Token>;
+}
+
 pub fn new(src: &'static str) -> Lexer {
     let mut x = Lexer {
         line: 1,
@@ -32,8 +36,8 @@ pub fn new(src: &'static str) -> Lexer {
 }
 
 
-impl Lexer {
-    pub fn next_token(&mut self) -> Option<Token> {
+impl Tokener for Lexer {
+    fn next_token(&mut self) -> Option<Token> {
         if let Some(c) = self.cur_no_white() {
             if c == '(' {
                 self.next();
@@ -53,6 +57,9 @@ impl Lexer {
         }
     }
 
+}
+
+impl Lexer {
     fn next_number(&mut self) -> Option<Token> {
         let s = self.get_string_to(|c| c.is_ascii_digit());
         if let Ok(num) = s.parse::<isize>() {
