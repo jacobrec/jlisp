@@ -1,54 +1,35 @@
 use std::rc::Rc;
 #[derive(Debug)]
-pub struct List {
-    head: Link
+pub struct List<T> {
+    head: Link<T>
 }
 
-type Link = Option<Rc<Node>>;
+type Link<T> = Option<Rc<Node<T>>>;
 
 #[derive(Debug)]
-struct Node {
-    elm: AtomOrList,
-    next: Link
+struct Node<T> {
+    elm: T,
+    next: Link<T>
 }
 
-#[derive(Debug)]
-pub enum AtomOrList {
-    Atom(Atom, usize),
-    List(List, usize),
-}
-
-#[derive(Debug)]
-pub enum Atom {
-    AIdentifier(String),
-    AString(String),
-    // AFloat(f64),
-    AInteger(isize),
-    ATrue,
-    AFalse,
-    // AVector(),
-    // AChar(char),
-}
-
-
-impl List {
+impl<T> List<T> {
     pub fn new() -> Self {
         List { head: None }
     }
 
-    pub fn wrap(elem: AtomOrList) -> Self {
+    pub fn wrap(elem: T) -> Self {
         let l = List { head: None };
         l.append(elem)
     }
 
-    pub fn append(&self, elem: AtomOrList) -> List {
+    pub fn append(&self, elem: T) -> List<T> {
         List { head: Some(Rc::new(Node {
             elm: elem,
             next: self.head.clone(),
         }))}
     }
 
-    pub fn copy(&self) -> List {
+    pub fn copy(&self) -> List<T> {
         List { head: self.head.clone() }
     }
 
@@ -60,15 +41,15 @@ impl List {
         }
     }
 
-    pub fn tail(&self) -> List {
+    pub fn tail(&self) -> List<T> {
         List { head: self.head.as_ref().and_then(|node| node.next.clone()) }
     }
 
-    pub fn head(&self) -> Option<&AtomOrList> {
+    pub fn head(&self) -> Option<&T> {
         self.head.as_ref().map(|node| &node.elm)
     }
 
-    pub fn tail_tip(&self) -> Option<&AtomOrList> {
+    pub fn tail_tip(&self) -> Option<&T> {
         let mut i = self.iter();
         let mut val = i.next();
         while let Some(v) = i.next() {
@@ -77,12 +58,12 @@ impl List {
         val
     }
 
-    pub fn iter(&self) -> Iter<'_> {
+    pub fn iter(&self) -> Iter<'_, T> {
         Iter { next: self.head.as_ref().map(|node| &**node) }
     }
 }
 
-impl Drop for List {
+impl<T> Drop for List<T> {
     fn drop(&mut self) {
         let mut head = self.head.take();
         while let Some(node) = head {
@@ -95,12 +76,12 @@ impl Drop for List {
     }
 }
 
-pub struct Iter<'a> {
-    next: Option<&'a Node>,
+pub struct Iter<'a, T> {
+    next: Option<&'a Node<T>>,
 }
 
-impl<'a> Iterator for Iter<'a> {
-    type Item = &'a AtomOrList;
+impl<'a, T> Iterator for Iter<'a, T> {
+    type Item = &'a T;
 
     fn next(&mut self) -> Option<Self::Item> {
         self.next.map(|node| {

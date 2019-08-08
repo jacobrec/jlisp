@@ -2,12 +2,11 @@
 
 ## Special forms
 - [x] if: `(if true 1 2)`
-- [ ] def: `(def name val)`
+- [ ] def: `(def name val)` <!-- Defined only in the current scope -->
 - [ ] function: `(function (arg1 arg2) return)`
 - [ ] do: `(do expr*)`
 - [ ] set: `(set name val)`
-- [ ] quote: `(quote (1 2 3))`
-- [ ] let: `(let ((name1 val1)) expr*)`
+- [ ] quote: `(quote (1 2 3))` <!-- literal form of next s-exp -->
 
 ## Builtin functions
 - [ ] car: support any arbitrary combo of caaddaadar

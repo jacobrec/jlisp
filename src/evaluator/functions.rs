@@ -5,7 +5,7 @@ use std::collections::HashMap;
 
 const SAME_LINE: usize = 0;
 
-pub type InlineType = fn (&mut super::Evaluator, &ast::List) -> ();
+pub type InlineType = fn (&mut super::Evaluator, &ast::ASTList) -> ();
 
 pub fn get_inlines() -> HashMap<String, InlineType> {
     let mut funs = HashMap::new();
@@ -24,32 +24,32 @@ pub fn get_inlines() -> HashMap<String, InlineType> {
     funs
 }
 
-fn comp_equal_inline(eve: &mut super::Evaluator, ast: &ast::List) {
+fn comp_equal_inline(eve: &mut super::Evaluator, ast: &ast::ASTList) {
     inline_helper_comp(eve, ast, bytecode::Op::Equal)
 }
-fn comp_less_equal_inline(eve: &mut super::Evaluator, ast: &ast::List) {
+fn comp_less_equal_inline(eve: &mut super::Evaluator, ast: &ast::ASTList) {
     inline_helper_comp(eve, ast, bytecode::Op::LessEqual)
 }
-fn comp_greater_equal_inline(eve: &mut super::Evaluator, ast: &ast::List) {
+fn comp_greater_equal_inline(eve: &mut super::Evaluator, ast: &ast::ASTList) {
     inline_helper_comp(eve, ast, bytecode::Op::GreaterEqual)
 }
-fn comp_less_then_inline(eve: &mut super::Evaluator, ast: &ast::List) {
+fn comp_less_then_inline(eve: &mut super::Evaluator, ast: &ast::ASTList) {
     inline_helper_comp(eve, ast, bytecode::Op::Less)
 }
-fn comp_greater_then_inline(eve: &mut super::Evaluator, ast: &ast::List) {
+fn comp_greater_then_inline(eve: &mut super::Evaluator, ast: &ast::ASTList) {
     inline_helper_comp(eve, ast, bytecode::Op::Greater)
 }
 
-fn plus_inline(eve: &mut super::Evaluator, ast: &ast::List) {
+fn plus_inline(eve: &mut super::Evaluator, ast: &ast::ASTList) {
     inline_helper_binary(eve, ast, bytecode::Op::Add)
 }
-fn times_inline(eve: &mut super::Evaluator, ast: &ast::List) {
+fn times_inline(eve: &mut super::Evaluator, ast: &ast::ASTList) {
     inline_helper_binary(eve, ast, bytecode::Op::Multiply)
 }
-fn divide_inline(eve: &mut super::Evaluator, ast: &ast::List) {
+fn divide_inline(eve: &mut super::Evaluator, ast: &ast::ASTList) {
     inline_helper_binary(eve, ast, bytecode::Op::Divide)
 }
-fn minus_inline(eve: &mut super::Evaluator, ast: &ast::List) {
+fn minus_inline(eve: &mut super::Evaluator, ast: &ast::ASTList) {
     if ast.len() > 2 {
         inline_helper_binary(eve, ast, bytecode::Op::Subtract)
     } else {
@@ -58,7 +58,7 @@ fn minus_inline(eve: &mut super::Evaluator, ast: &ast::List) {
     }
 }
 
-fn if_inline(eve: &mut super::Evaluator, ast: &ast::List) {
+fn if_inline(eve: &mut super::Evaluator, ast: &ast::ASTList) {
     let t1 = ast.tail();
     let t2 = t1.tail();
     let mut false_arg = ast.head();
@@ -85,7 +85,7 @@ fn if_inline(eve: &mut super::Evaluator, ast: &ast::List) {
 }
 
 
-fn inline_helper_comp(eve: &mut super::Evaluator, ast: &ast::List, opcode: bytecode::Op) {
+fn inline_helper_comp(eve: &mut super::Evaluator, ast: &ast::ASTList, opcode: bytecode::Op) {
     let count = inline_helper_parse_args(eve, ast);
     if count > 255 {
         panic!("Can't have more then 255 values in a comparision");
@@ -94,14 +94,14 @@ fn inline_helper_comp(eve: &mut super::Evaluator, ast: &ast::List, opcode: bytec
     eve.chunk.add_op(bytecode::Op::from_lit(count as u8), SAME_LINE);
 }
 
-fn inline_helper_binary(eve: &mut super::Evaluator, ast: &ast::List, opcode: bytecode::Op) {
+fn inline_helper_binary(eve: &mut super::Evaluator, ast: &ast::ASTList, opcode: bytecode::Op) {
     let count = inline_helper_parse_args(eve, ast);
     for _ in 0..(count - 1) {
         eve.chunk.add_op(opcode, SAME_LINE);
     }
 }
 
-fn inline_helper_parse_args(eve: &mut super::Evaluator, ast: &ast::List) -> usize {
+fn inline_helper_parse_args(eve: &mut super::Evaluator, ast: &ast::ASTList) -> usize {
     let mut iter = ast.iter().peekable();
     let mut count = 0;
     loop {

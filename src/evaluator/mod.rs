@@ -6,7 +6,7 @@ use std::collections::HashMap;
 
 mod functions;
 
-pub fn evaluate(ast: Option<ast::List>) -> Option<chunk::Chunk> {
+pub fn evaluate(ast: Option<ast::ASTList>) -> Option<chunk::Chunk> {
     ast.map(|ast| {
         let mut x = Evaluator {
             chunk: chunk::new(),
@@ -22,13 +22,13 @@ pub struct Evaluator {
 }
 
 impl Evaluator {
-    fn eval(&mut self, ast: ast::List) -> chunk::Chunk {
+    fn eval(&mut self, ast: ast::ASTList) -> chunk::Chunk {
         self.eval_s_expr(ast);
         self.chunk.add_op(bytecode::Op::Return, 1);
         std::mem::replace(&mut self.chunk, chunk::new())
     }
 
-    fn eval_s_expr(&mut self, ast: ast::List) {
+    fn eval_s_expr(&mut self, ast: ast::ASTList) {
         let mut val = ast;
         while let Some(astlora) = val.head() {
             self.eval_s_expr_inner(astlora);
@@ -42,7 +42,7 @@ impl Evaluator {
         }
     }
 
-    fn eval_fn(&mut self, ast: &ast::List) {
+    fn eval_fn(&mut self, ast: &ast::ASTList) {
         let tail_tip = ast.tail_tip();
         if let Some(ast::AtomOrList::Atom(ast::Atom::AIdentifier(cmd), _)) = tail_tip {
             if let Some(f) = self.inlined.get(cmd) {

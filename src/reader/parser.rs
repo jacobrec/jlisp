@@ -1,4 +1,4 @@
-use crate::ast::{List, AtomOrList, Atom};
+use crate::ast::{ASTList, AtomOrList, Atom};
 use super::lexer::{Lexer, Token, TokenType};
 
 pub struct Parser {
@@ -17,8 +17,8 @@ pub fn new(mut lex: Lexer) -> Parser {
 }
 
 impl Parser {
-    pub fn parse (&mut self) -> Option<List> {
-        return Some(List::new().append(self.parse_sexp()))
+    pub fn parse (&mut self) -> Option<ASTList> {
+        return Some(ASTList::new().append(self.parse_sexp()))
     }
 
     fn parse_sexp(&mut self) -> AtomOrList {
@@ -30,8 +30,8 @@ impl Parser {
         }
     }
 
-    fn parse_sexp_inner(&mut self) -> List {
-        let mut l = List::new();
+    fn parse_sexp_inner(&mut self) -> ASTList {
+        let mut l = ASTList::new();
         loop {
             match self.cur.ttype {
                 TokenType::RightParen => return l,
