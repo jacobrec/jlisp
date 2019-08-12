@@ -30,25 +30,19 @@ impl Evaluator {
 
     fn eval_s_expr(&mut self, ast: ast::ASTList) {
         let mut val = ast;
-        while let Some(astlora) = val.head() {
-            self.eval_s_expr_inner(astlora);
+        while let Some((a, l)) = val.head() {
+            self.eval_atom(a, *l);
             val = val.tail();
         }
     }
-    fn eval_s_expr_inner(&mut self, ast: &ast::AtomOrList) {
-        match ast {
-            ast::AtomOrList::List(l, _) => self.eval_fn(l),
-            ast::AtomOrList::Atom(a, line) => self.eval_atom(a, *line),
-        }
-    }
 
-    fn eval_fn(&mut self, ast: &ast::ASTList) {
+    fn eval_fn(&mut self, ast: &ast::List<ast::Atom>, line: usize) {
         let tail_tip = ast.tail_tip();
-        if let Some(ast::AtomOrList::Atom(ast::Atom::AIdentifier(cmd), _)) = tail_tip {
+        if let Some(ast::Atom::AIdentifier(cmd)) = tail_tip {
             if let Some(f) = self.inlined.get(cmd) {
                 f(self, ast);
             } else {
-                unimplemented!("Can't do custom functions yet")
+                unimplemented!("Can't do custom functions yet. Line: {}", line)
             }
         } else {
             panic!("Function is not a function")
@@ -57,6 +51,9 @@ impl Evaluator {
 
     fn eval_atom(&mut self, ast: &ast::Atom, line: usize) {
         match ast {
+            ast::Atom::AList(l) => {
+                self.eval_fn(l, line)
+            }
             ast::Atom::AInteger(v) => {
                 self.chunk.add_constant(bytecode::Value::VInt(*v), line);
             },
@@ -64,10 +61,6 @@ impl Evaluator {
                 self.chunk.add_constant(bytecode::Value::VString((*v).clone()), line);
             },
             ast::Atom::AIdentifier(_) => unimplemented!(),
-            ast::Atom::AList(v) => {
-                unimplemented!("{:?}", v);
-                //self.chunk.add_constant(bytecode::Value::VList((*v).clone()), line);
-            },
             ast::Atom::ATrue => {
                 self.chunk.add_constant(bytecode::Value::VBool(true), line);
             },

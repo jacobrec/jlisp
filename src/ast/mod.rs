@@ -2,13 +2,8 @@ mod list;
 
 pub use list::List;
 
-pub type ASTList = list::List<AtomOrList>;
-
-#[derive(Debug, Clone)]
-pub enum AtomOrList {
-    Atom(Atom, usize),
-    List(List<AtomOrList>, usize),
-}
+pub type ASTList = list::List<ASTAtom>;
+pub type ASTAtom = (Atom, usize);
 
 #[derive(Debug, Clone)]
 pub enum Atom {
