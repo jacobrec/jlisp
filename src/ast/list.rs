@@ -22,14 +22,18 @@ impl<T> List<T> {
         l.append(elem)
     }
 
-    pub fn append(&self, elem: T) -> List<T> {
+    pub fn cons(elem: T, rest: &Self) -> Self {
         List { head: Some(Rc::new(Node {
             elm: elem,
-            next: self.head.clone(),
+            next: rest.head.clone(),
         }))}
     }
 
-    pub fn copy(&self) -> List<T> {
+    pub fn append(&self, elem: T) -> Self {
+        List::cons(elem, self)
+    }
+
+    pub fn copy(&self) -> Self {
         List { head: self.head.clone() }
     }
 
@@ -88,5 +92,35 @@ impl<'a, T> Iterator for Iter<'a, T> {
             self.next = node.next.as_ref().map(|node| &**node);
             &node.elm
         })
+    }
+}
+
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_1() {
+        let l = List::new();
+        let a = List::cons(3, &l);
+        let b = List::cons(2, &a);
+        let c = List::cons(1, &b);
+
+        assert_eq!(Some(&3), a.head());
+        assert_eq!(Some(&2), b.head());
+        assert_eq!(Some(&1), c.head());
+    }
+
+    #[test]
+    fn test_2() {
+        let l = List::new()
+            .append(3)
+            .append(2)
+            .append(1);
+
+        assert_eq!(Some(&3), l.tail().tail().head());
+        assert_eq!(Some(&2), l.tail().head());
+        assert_eq!(Some(&1), l.head());
     }
 }

@@ -2,15 +2,15 @@
 
 ## Special forms
 - [x] if: `(if true 1 2)`
-- [ ] def: `(def name val)` <!-- Defined only in the current scope -->
-- [ ] function: `(function (arg1 arg2) return)`
-- [ ] do: `(do expr*)`
-- [ ] set: `(set name val)`
 - [ ] quote: `(quote (1 2 3))` <!-- literal form of next s-exp -->
+- [ ] def: `(def name val)` <!-- Defined only in the current scope -->
+- [ ] set: `(set name val)`
+- [ ] do: `(do expr*)`
+- [ ] function: `(function (arg1 arg2) return)`
 
 ## Builtin functions
-- [ ] car: support any arbitrary combo of caaddaadar
-- [ ] cdr: see above
+- [ ] car/cdr: support any arbitrary combo of caaddaadar
+- [ ] cons: `(cons 1 '(2 3)) => '(1 2 3)` <!-- Head of this is 1, tail is (2 3) -->
 - [x] +-*/: overloaded
 
 

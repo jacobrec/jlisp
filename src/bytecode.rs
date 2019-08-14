@@ -3,6 +3,8 @@ use std::mem::transmute;
 use std::cmp::Ordering;
 use std::ops;
 
+use crate::ast::List;
+
 
 #[derive(Debug, Copy, Clone)]
 pub enum Op {
@@ -46,6 +48,7 @@ pub enum Value {
     VInt(isize),
     VString(String),
     VBool(bool),
+    VList(List<Value>),
     VErr,
 }
 
@@ -56,6 +59,7 @@ impl Value {
             VInt(_) => String::from("Int"),
             VString(_) => String::from("String"),
             VBool(_) => String::from("Bool"),
+            VList(_) => String::from("List"),
             VErr => String::from("Error"),
         }
     }
@@ -65,6 +69,7 @@ impl Value {
             VInt(i) => *i != 0,
             VString(s) => s.len() > 0,
             VBool(b) => *b,
+            VList(l) => l.len() == 0,
             VErr => panic!("VErr should not be used"),
         }
     }
@@ -177,6 +182,7 @@ impl PartialOrd for Value {
                 }
             },
             VBool(_) => None,
+            VList(_) => None,
             VString(s) => {
                 match other {
                     VString(o) => s.partial_cmp(o),

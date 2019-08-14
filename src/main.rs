@@ -12,9 +12,7 @@ fn main() {
     let show_ast = true;
 
     let test = r###"
-(if (> 1 2)
-  true
-  false)
+        (quote (1 2))
         "###;
     let ast = reader::read(test);
     if debug && show_ast { dbg!(&ast); }

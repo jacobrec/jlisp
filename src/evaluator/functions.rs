@@ -20,7 +20,10 @@ pub fn get_inlines() -> HashMap<String, InlineType> {
     funs.insert(String::from("<="), comp_less_equal_inline as InlineType);
     funs.insert(String::from(">="), comp_greater_equal_inline as InlineType);
 
+    // Special forms
     funs.insert(String::from("if"), if_inline as InlineType);
+    funs.insert(String::from("quote"), quote_inline as InlineType);
+
     funs
 }
 
@@ -82,6 +85,33 @@ fn if_inline(eve: &mut super::Evaluator, ast: &ast::List<ast::Atom>) {
     eve.eval_atom(true_arg.expect(""), SAME_LINE);
     let end = eve.chunk.code.len() - 1;
     eve.chunk.replace_instruction(d2, bytecode::Op::from_lit((end - d2) as u8));
+}
+
+fn quote_helper_alist_to_vlist(ast: &ast::Atom) -> bytecode::Value {
+    match ast {
+        ast::Atom::AFalse => bytecode::Value::VBool(false),
+        ast::Atom::ATrue => bytecode::Value::VBool(true),
+        ast::Atom::AString(s) => bytecode::Value::VString(s.clone()),
+        ast::Atom::AInteger(v) => bytecode::Value::VInt(*v),
+        ast::Atom::AIdentifier(v) => unimplemented!(),
+        ast::Atom::AList(v) => {
+            let mut l: ast::List<bytecode::Value> = ast::List::new();
+            for x in v.iter() {
+                l = l.append(quote_helper_alist_to_vlist(x))
+            }
+            return bytecode::Value::VList(l)
+        },
+    }
+}
+
+fn quote_inline(eve: &mut super::Evaluator, ast: &ast::List<ast::Atom>) {
+    if ast.len() == 2 {
+        if let Some(val) = ast.head() {
+            eve.chunk.add_constant(quote_helper_alist_to_vlist(val), SAME_LINE);
+            return;
+        }
+    }
+    panic!("Error, not enough arguments");
 }
 
 
