@@ -14,6 +14,10 @@ pub enum Op {
     Multiply,
     Divide,
 
+    Car,
+    Cdr,
+    Cons,
+
     Equal,
     LessEqual,
     GreaterEqual,

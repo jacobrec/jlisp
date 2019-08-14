@@ -66,6 +66,31 @@ impl VM {
                         _ => return err("Value is not negatable")
                     }
                 },
+
+                Op::Car | Op::Cdr => {
+                    let val = self.stack.pop().expect("Empty stack");
+                    match val {
+                        VList(l) => {
+                            match op {
+                                Op::Car => self.stack.push(l.head().expect("List needs head").clone()),
+                                Op::Cdr => self.stack.push(VList(l.tail())),
+                                _ => panic!(""),
+                            }
+                        }
+                        _ => return err("Value is not car-able")
+                    }
+                },
+
+                Op::Cons => {
+                    let elem = self.stack.pop().expect("Empty stack");
+                    let list = self.stack.pop();
+                    if let Some(VList(l)) = list {
+                        self.stack.push(VList(l.append(elem)))
+                    } else {
+                        return err("not a cons-able object")
+                    }
+                },
+
                 Op::Add | Op::Subtract | Op::Multiply | Op::Divide => {
                     let v1 = self.stack.pop().expect("Empty stack");
                     let v2 = self.stack.pop().expect("Empty stack");

@@ -12,7 +12,7 @@ fn main() {
     let show_ast = true;
 
     let test = r###"
-        (quote (1 2))
+        (cons 0 (quote (1 2 3 4 5)))
         "###;
     let ast = reader::read(test);
     if debug && show_ast { dbg!(&ast); }

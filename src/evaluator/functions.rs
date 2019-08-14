@@ -20,6 +20,10 @@ pub fn get_inlines() -> HashMap<String, InlineType> {
     funs.insert(String::from("<="), comp_less_equal_inline as InlineType);
     funs.insert(String::from(">="), comp_greater_equal_inline as InlineType);
 
+    funs.insert(String::from("car"), car_inline as InlineType);
+    funs.insert(String::from("cdr"), cdr_inline as InlineType);
+    funs.insert(String::from("cons"), cons_inline as InlineType);
+
     // Special forms
     funs.insert(String::from("if"), if_inline as InlineType);
     funs.insert(String::from("quote"), quote_inline as InlineType);
@@ -111,9 +115,35 @@ fn quote_inline(eve: &mut super::Evaluator, ast: &ast::List<ast::Atom>) {
             return;
         }
     }
-    panic!("Error, not enough arguments");
+    panic!("Error, wrong number of arguments");
 }
 
+fn car_inline(eve: &mut super::Evaluator, ast: &ast::List<ast::Atom>) {
+    if ast.len() == 2 {
+        inline_helper_parse_args(eve, ast);
+        eve.chunk.add_op(bytecode::Op::Car, SAME_LINE);
+        return;
+    }
+    panic!("Error, wrong number of arguments");
+}
+
+fn cdr_inline(eve: &mut super::Evaluator, ast: &ast::List<ast::Atom>) {
+    if ast.len() == 2 {
+        inline_helper_parse_args(eve, ast);
+        eve.chunk.add_op(bytecode::Op::Cdr, SAME_LINE);
+        return;
+    }
+    panic!("Error, wrong number of arguments");
+}
+
+fn cons_inline(eve: &mut super::Evaluator, ast: &ast::List<ast::Atom>) {
+    if ast.len() == 3 {
+        inline_helper_parse_args(eve, ast);
+        eve.chunk.add_op(bytecode::Op::Cons, SAME_LINE);
+        return;
+    }
+    panic!("Error, wrong number of arguments");
+}
 
 fn inline_helper_comp(eve: &mut super::Evaluator, ast: &ast::List<ast::Atom>, opcode: bytecode::Op) {
     let count = inline_helper_parse_args(eve, ast);
