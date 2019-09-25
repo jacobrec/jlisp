@@ -3,10 +3,11 @@
 ## Special forms
 - [x] if: `(if true 1 2)`
 - [x] quote: `(quote (1 2 3))` <!-- literal form of next s-exp -->
+- [x] do: `(do expr*)`
 - [ ] def: `(def name val)` <!-- Defined only in the current scope -->
 - [ ] set: `(set name val)`
-- [ ] do: `(do expr*)`
 - [ ] function: `(function (arg1 arg2) return)`
+- [ ] macro: `(macro (arg1 arg2) return)`
 
 ## Builtin functions
 - [x] car/cdr: `(car (quote (1 2 3))) => 1`

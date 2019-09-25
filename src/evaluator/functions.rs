@@ -27,6 +27,7 @@ pub fn get_inlines() -> HashMap<String, InlineType> {
     // Special forms
     funs.insert(String::from("if"), if_inline as InlineType);
     funs.insert(String::from("quote"), quote_inline as InlineType);
+    funs.insert(String::from("do"), do_inline as InlineType);
 
     funs
 }
@@ -143,6 +144,16 @@ fn cons_inline(eve: &mut super::Evaluator, ast: &ast::List<ast::Atom>) {
         return;
     }
     panic!("Error, wrong number of arguments");
+}
+
+fn do_inline(eve: &mut super::Evaluator, ast: &ast::List<ast::Atom>) {
+    let arg_count = inline_helper_parse_args(eve, ast);
+    if arg_count > 255 {
+        panic!("Can't have more then 255 forms in a do");
+    }
+    eve.chunk.add_op(bytecode::Op::Discard, SAME_LINE);
+    eve.chunk.add_op(bytecode::Op::from_lit((arg_count - 1) as u8), SAME_LINE);
+    return;
 }
 
 fn inline_helper_comp(eve: &mut super::Evaluator, ast: &ast::List<ast::Atom>, opcode: bytecode::Op) {

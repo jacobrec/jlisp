@@ -94,7 +94,7 @@ pub fn disassemble_instruction(c: &Chunk, i: usize) -> usize{
         Op::Return | Op::Add | Op::Subtract | Op::Multiply | Op::Divide | Op::Negate | Op::Car | Op::Cdr | Op::Cons => {
             disassemble_simple(c.code[i], c.get_line(i), i); 1
         },
-        Op::Equal | Op::Less | Op::Greater | Op::GreaterEqual | Op::LessEqual => {
+        Op::Equal | Op::Less | Op::Greater | Op::GreaterEqual | Op::LessEqual | Op::Discard => {
             disassemble_with_data1(c.code[i], c.get_line(i), i, c.code[i+1].to_lit()); 2
         },
         Op::Const1 => { disassemble_const(c, Op::Const1, i); 2 },

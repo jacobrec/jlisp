@@ -44,8 +44,14 @@ impl VM {
             }
             match op {
                 Op::Return => {
-                    println!("{:?}", self.stack.pop());
+                    println!("RETURN: {:?}", self.stack.pop());
                     return Ok(())
+                },
+                Op::Discard => {
+                    let amount = self.get_data();
+                    for _ in 0..amount {
+                        self.stack.pop().expect("Empty stack");
+                    }
                 },
 
                 Op::Const1 | Op::Const2 | Op::Const3 => {
