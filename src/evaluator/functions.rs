@@ -147,12 +147,14 @@ fn cons_inline(eve: &mut super::Evaluator, ast: &ast::List<ast::Atom>) {
 }
 
 fn do_inline(eve: &mut super::Evaluator, ast: &ast::List<ast::Atom>) {
-    let arg_count = inline_helper_parse_args(eve, ast);
+    let mod_ast = ast::List::reverse(ast.append(ast::Atom::AFalse)).tail();
+    let arg_count = inline_helper_parse_args(eve, &mod_ast);
     if arg_count > 255 {
         panic!("Can't have more then 255 forms in a do");
     }
-    eve.chunk.add_op(bytecode::Op::Discard, SAME_LINE);
-    eve.chunk.add_op(bytecode::Op::from_lit((arg_count - 1) as u8), SAME_LINE);
+    // TODO: discard the unused operations, currently they remain on the stack
+    // eve.chunk.add_op(bytecode::Op::Discard, SAME_LINE);
+    // eve.chunk.add_op(bytecode::Op::from_lit((arg_count - 1) as u8), SAME_LINE);
     return;
 }
 

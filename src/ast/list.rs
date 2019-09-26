@@ -12,7 +12,7 @@ struct Node<T> {
     next: Link<T>
 }
 
-impl<T> List<T> {
+impl<T> List<T> where T: Clone {
     pub fn new() -> Self {
         List { head: None }
     }
@@ -64,6 +64,18 @@ impl<T> List<T> {
 
     pub fn iter(&self) -> Iter<'_, T> {
         Iter { next: self.head.as_ref().map(|node| &**node) }
+    }
+
+    pub fn reverse(list: Self) -> Self {
+        let mut l_out = List::new();
+        let mut l_in = list;
+
+        while let Some(a) = l_in.head() {
+            l_out = l_out.append((*a).clone());
+            l_in = l_in.tail();
+        };
+
+        l_out
     }
 }
 
