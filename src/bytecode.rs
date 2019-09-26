@@ -32,6 +32,9 @@ pub enum Op {
     Const2, // Uses next 2 bytes to identify constant number
     Const3, // Uses next 3 bytes to identify constant number
 
+    Load,
+    Store,
+
     Jump,
     JumpTrue,
 

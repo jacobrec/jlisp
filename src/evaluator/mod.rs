@@ -60,7 +60,10 @@ impl Evaluator {
             ast::Atom::AString(v) => {
                 self.chunk.add_constant(bytecode::Value::VString((*v).clone()), line);
             },
-            ast::Atom::AIdentifier(_) => unimplemented!(),
+            ast::Atom::AIdentifier(v) => {
+                self.chunk.add_constant(bytecode::Value::VString((*v).clone()), line);
+                self.chunk.add_op(bytecode::Op::Load, line);
+            }
             ast::Atom::ATrue => {
                 self.chunk.add_constant(bytecode::Value::VBool(true), line);
             },

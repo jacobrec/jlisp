@@ -63,6 +63,10 @@ impl Chunk {
     }
 
     pub fn replace_instruction(&mut self, i: usize, op: Op) {
+        if let Op::Const1 = self.code[i] {
+            self.code.remove(i+1);
+            println!("{}", i);
+        }
         self.code[i] = op
     }
 
@@ -80,6 +84,10 @@ impl Chunk {
             self.lines.push(self.code.len());
         }
     }
+
+    pub fn get_count(&self) -> usize {
+        self.code.len()
+    }
 }
 
 
@@ -91,15 +99,15 @@ fn disassemble_inner(c: &Chunk, i: usize) {
 
 pub fn disassemble_instruction(c: &Chunk, i: usize) -> usize{
     match c.code[i] {
-        Op::Return | Op::Add | Op::Subtract | Op::Multiply | Op::Divide | Op::Negate | Op::Car | Op::Cdr | Op::Cons | Op::Discard1 => {
+        Op::Return | Op::Add | Op::Subtract | Op::Multiply | Op::Divide | Op::Negate | Op::Car | Op::Cdr | Op::Cons | Op::Store | Op::Load | Op::Discard1 => {
             disassemble_simple(c.code[i], c.get_line(i), i); 1
         },
         Op::Equal | Op::Less | Op::Greater | Op::GreaterEqual | Op::LessEqual | Op::Discard => {
             disassemble_with_data1(c.code[i], c.get_line(i), i, c.code[i+1].to_lit()); 2
         },
-        Op::Const1 => { disassemble_const(c, Op::Const1, i); 2 },
-        Op::Const2 => { disassemble_const(c, Op::Const2, i); 3 },
-        Op::Const3 => { disassemble_const(c, Op::Const3, i); 4 },
+        Op::Const1 => { disassemble_const(c, c.code[i], i); 2 },
+        Op::Const2 => { disassemble_const(c, c.code[i], i); 3 },
+        Op::Const3 => { disassemble_const(c, c.code[i], i); 4 },
         Op::Jump | Op::JumpTrue => {
             disassemble_with_data1(c.code[i], c.get_line(i), i, c.code[i+1].to_lit()); 2
         },

@@ -132,7 +132,16 @@ impl VM {
                     } {
                         self.ip = ((self.ip as i64) + (amount as i64)) as usize;
                     }
-                }
+                },
+
+                // TODO: finish variables
+                Op::Store => {
+                    let name = self.stack.pop().expect("Empty Stack");
+                    let value = self.stack.pop().expect("Empty Stack");
+                },
+                Op::Load => {
+                    let name = self.stack.pop().expect("Empty Stack");
+                },
 
                 _ => return err("Unimplemented op")
             }

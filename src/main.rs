@@ -13,9 +13,8 @@ fn main() {
 
     let test = r###"
         (do
-            1
-            2
-            3)
+            (def a 2)
+            a)
         "###;
     let ast = reader::read(test);
     if debug && show_ast { dbg!(&ast); }
