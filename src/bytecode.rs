@@ -25,6 +25,7 @@ pub enum Op {
     Greater,
 
     Discard,
+    Discard1,
     Return,
 
     Const1, // Uses next byte to identify constant number

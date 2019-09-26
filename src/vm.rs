@@ -47,6 +47,9 @@ impl VM {
                     println!("RETURN: {:?}", self.stack.pop());
                     return Ok(())
                 },
+                Op::Discard1 => {
+                    self.stack.pop().expect("Empty stack");
+                },
                 Op::Discard => {
                     let amount = self.get_data();
                     for _ in 0..amount {

@@ -148,13 +148,10 @@ fn cons_inline(eve: &mut super::Evaluator, ast: &ast::List<ast::Atom>) {
 
 fn do_inline(eve: &mut super::Evaluator, ast: &ast::List<ast::Atom>) {
     let mod_ast = ast::List::reverse(ast.append(ast::Atom::AFalse)).tail();
-    let arg_count = inline_helper_parse_args(eve, &mod_ast);
+    let arg_count = inline_helper_parse_args_insert_betweener(eve, &mod_ast, bytecode::Op::Discard1);
     if arg_count > 255 {
         panic!("Can't have more then 255 forms in a do");
     }
-    // TODO: discard the unused operations, currently they remain on the stack
-    // eve.chunk.add_op(bytecode::Op::Discard, SAME_LINE);
-    // eve.chunk.add_op(bytecode::Op::from_lit((arg_count - 1) as u8), SAME_LINE);
     return;
 }
 
@@ -182,6 +179,27 @@ fn inline_helper_parse_args(eve: &mut super::Evaluator, ast: &ast::List<ast::Ato
         if let Some(_) = iter.peek() {
             eve.eval_atom(node, SAME_LINE);
             count += 1;
+        } else {
+            return count;
+        }
+    };
+}
+
+fn inline_helper_parse_args_insert_betweener(eve: &mut super::Evaluator,
+                                             ast: &ast::List<ast::Atom>,
+                                             op: bytecode::Op) -> usize {
+    let mut iter = ast.iter().peekable();
+    let mut count = 0;
+    let mut shouldInsert = false;
+    loop {
+        let node = iter.next().expect("");
+        if let Some(_) = iter.peek() {
+            if shouldInsert {
+                eve.chunk.add_op(op, SAME_LINE);
+            }
+            eve.eval_atom(node, SAME_LINE);
+            count += 1;
+            shouldInsert = true;
         } else {
             return count;
         }

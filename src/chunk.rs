@@ -91,7 +91,7 @@ fn disassemble_inner(c: &Chunk, i: usize) {
 
 pub fn disassemble_instruction(c: &Chunk, i: usize) -> usize{
     match c.code[i] {
-        Op::Return | Op::Add | Op::Subtract | Op::Multiply | Op::Divide | Op::Negate | Op::Car | Op::Cdr | Op::Cons => {
+        Op::Return | Op::Add | Op::Subtract | Op::Multiply | Op::Divide | Op::Negate | Op::Car | Op::Cdr | Op::Cons | Op::Discard1 => {
             disassemble_simple(c.code[i], c.get_line(i), i); 1
         },
         Op::Equal | Op::Less | Op::Greater | Op::GreaterEqual | Op::LessEqual | Op::Discard => {
