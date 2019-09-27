@@ -227,16 +227,16 @@ fn inline_helper_parse_args_insert_betweener(eve: &mut super::Evaluator,
                                              op: bytecode::Op) -> usize {
     let mut iter = ast.iter().peekable();
     let mut count = 0;
-    let mut shouldInsert = false;
+    let mut should_insert = false;
     loop {
         let node = iter.next().expect("");
         if let Some(_) = iter.peek() {
-            if shouldInsert {
+            if should_insert {
                 eve.chunk.add_op(op, SAME_LINE);
             }
             eve.eval_atom(node, SAME_LINE);
             count += 1;
-            shouldInsert = true;
+            should_insert = true;
         } else {
             return count;
         }

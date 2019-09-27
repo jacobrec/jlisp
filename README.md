@@ -6,16 +6,19 @@
 - [x] do: `(do expr*)`
 - [x] def: `(def name val)` <!-- Defined only in the current scope -->
 - [x] set: `(set name val)`
-- [ ] function: `(function (arg*) return)`
+- [ ] function: `(function (arg*) returnExpr)`
 - [ ] defmacro: `(macro name func)`
 
 ## Builtin functions
 - [x] car/cdr: `(car (quote (1 2 3))) => 1`
 - [x] cons: `(cons 1 '(2 3)) => '(1 2 3)` <!-- Head of this is 1, tail is (2 3) -->
 - [x] +-*/: overloaded
+
+## Native functions
 - [ ] open/close: for files
 - [ ] open/close/bind: for sockets
-- [ ] somthing: for threads
+- [ ] something: for threads
+- [ ] something: for time
 
 
 ## Macro forms
