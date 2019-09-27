@@ -141,5 +141,6 @@ mod test {
 
         assert_eq!(Some(VInt(15)), _test_string(test_ans15));
         assert_eq!(Some(VInt(7)), _test_string(test_ans7));
+        assert_eq!(Some(VInt(7)), _test_string("(do (def a 7) ; comments\n a)"));
     }
 }
