@@ -13,24 +13,8 @@ fn main() {
 
     let test = r###"
         (do
-            (def a 2)
-            (- 1 2 3)
-            (- 1 2 3)
-            (- 1 2 3)
-            (def b 3)
-            (- 1 2 3)
-            (- 1 2 3)
-            (def c (+ a b))
-            (- 1 2 3)
-            (def d (+ a b c))
-            (- 1 2 3)
-            (- 1 2 3)
-            (- a b)
-            (def e (+ c d))
-            (- 1 2 3)
-            (- 1 2 3)
-            (def f e)
-            e) ; Should be 15
+            (def a 29) ; testing comments
+            a)
         "###;
 
     let ast = reader::read(test);
@@ -125,7 +109,7 @@ mod test {
     fn test_do() {
     let test_ans7 = r###"
         (do
-            (- 1 2 3)
+            (- 1 2 3) ; this is to do stuff on the stack
             (def a 2)
             (- 1 2 3)
             (set a 7)

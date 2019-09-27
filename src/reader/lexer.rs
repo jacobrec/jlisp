@@ -47,6 +47,9 @@ impl Tokener for Lexer {
                 Some(self.make_token(TokenType::RightParen))
             } else if c.is_ascii_digit() {
                 self.next_number()
+            } else if c == ';' {
+                self.skip_to('\n');
+                self.next_token()
             } else if c == '"' {
                 self.next_string()
             } else {
@@ -101,6 +104,18 @@ impl Lexer {
         Token {
             line: self.line,
             ttype: tok,
+        }
+    }
+
+    fn skip_to(&mut self, to: char) {
+        loop {
+            if let Some(c) = self.cur {
+                if c != to {
+                    self.next();
+                } else {
+                    return
+                }
+            }
         }
     }
 
