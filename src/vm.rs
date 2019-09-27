@@ -5,6 +5,7 @@ use crate::bytecode::Value::*;
 
 use std::cmp::Ordering;
 
+
 pub enum VMError {
     Runtime(String),
     Compile(String),
@@ -15,6 +16,7 @@ pub struct VM {
     pub c: Chunk,
     ip: usize,
     stack: Vec<Value>,
+    stackFrames: Vec<usize>,
 }
 
 
@@ -24,6 +26,7 @@ pub fn new(c: Chunk) -> VM {
         c: c,
         ip: 0,
         stack: Vec::new(),
+        stackFrames: Vec::new(),
     }
 }
 
@@ -36,7 +39,7 @@ impl VM {
         self.ip += 1;
         self.c.code[self.ip].to_lit()
     }
-    pub fn run(&mut self) -> Result<(), VMError>  {
+    pub fn run(&mut self) -> Result<Value, VMError>  {
         loop {
             let op = self.c.code[self.ip];
             if self.debug {
@@ -44,8 +47,8 @@ impl VM {
             }
             match op {
                 Op::Return => {
-                    println!("RETURN: {:?}", self.stack.pop());
-                    return Ok(())
+                    let v = self.stack.pop().expect("Empty Stack");
+                    return Ok(v)
                 },
                 Op::Discard1 => {
                     self.stack.pop().expect("Empty stack");
@@ -134,13 +137,29 @@ impl VM {
                     }
                 },
 
-                // TODO: finish variables
                 Op::Store => {
-                    let name = self.stack.pop().expect("Empty Stack");
                     let value = self.stack.pop().expect("Empty Stack");
+                    self.stack.push(value.clone());
+                    self.stack.push(value);
                 },
                 Op::Load => {
-                    let name = self.stack.pop().expect("Empty Stack");
+                    let loc = self.get_data();
+                    let stack_back = self.get_data();
+                    self.stack.push(self.stack[(loc as usize) + self.stackFrames[stack_back as usize]].clone());
+                },
+
+                Op::CreateFrame => {
+                    self.stackFrames.push(self.stack.len());
+                },
+                Op::DropFrame => {
+                    let s = self.stackFrames.pop().expect("Empty stackframes");
+                    self.stack.truncate(s);
+                },
+                Op::DropFrameSaveReturn => {
+                    let v = self.stack.pop().expect("Empty stack");
+                    let s = self.stackFrames.pop().expect("Empty stackframes");
+                    self.stack.truncate(s);
+                    self.stack.push(v);
                 },
 
                 _ => return err("Unimplemented op")

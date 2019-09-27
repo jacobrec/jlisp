@@ -35,6 +35,10 @@ pub enum Op {
     Load,
     Store,
 
+    CreateFrame,
+    DropFrame,
+    DropFrameSaveReturn,
+
     Jump,
     JumpTrue,
 
@@ -211,7 +215,33 @@ impl PartialOrd for Value {
 }
 impl PartialEq for Value {
     fn eq(&self, other: &Value) -> bool {
-        self.type_of() == other.type_of() && self == other
+        match self {
+            VInt(s) => {
+                if let VInt(o) = other {
+                    return o == s;
+                }
+            },
+            VBool(s) => {
+                if let VBool(o) = other {
+                    return o == s;
+                }
+            },
+            VList(s) => {
+                return false;
+            },
+            VString(s) => {
+                if let VString(o) = other {
+                    return o == s;
+                }
+            },
+            VFloat(s) => {
+                if let VFloat(o) = other {
+                    return o == s;
+                }
+            },
+            VErr => return false
+        };
+        return false;
     }
 }
 

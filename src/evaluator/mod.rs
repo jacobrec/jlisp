@@ -11,6 +11,7 @@ pub fn evaluate(ast: Option<ast::ASTList>) -> Option<chunk::Chunk> {
         let mut x = Evaluator {
             chunk: chunk::new(),
             inlined: functions::get_inlines(),
+            var_stack: Vec::new(),
         };
         x.eval(ast)
     })
@@ -19,6 +20,7 @@ pub fn evaluate(ast: Option<ast::ASTList>) -> Option<chunk::Chunk> {
 pub struct Evaluator {
     chunk: chunk::Chunk,
     inlined: HashMap<String, functions::InlineType>,
+    var_stack: Vec<HashMap<String, usize>>,
 }
 
 impl Evaluator {
@@ -61,8 +63,10 @@ impl Evaluator {
                 self.chunk.add_constant(bytecode::Value::VString((*v).clone()), line);
             },
             ast::Atom::AIdentifier(v) => {
-                self.chunk.add_constant(bytecode::Value::VString((*v).clone()), line);
+                let (loc, stack_back) = self.get_var_stack_loc(v);
                 self.chunk.add_op(bytecode::Op::Load, line);
+                self.chunk.add_op(bytecode::Op::from_lit(loc), line);
+                self.chunk.add_op(bytecode::Op::from_lit(stack_back), line);
             }
             ast::Atom::ATrue => {
                 self.chunk.add_constant(bytecode::Value::VBool(true), line);
@@ -71,5 +75,16 @@ impl Evaluator {
                 self.chunk.add_constant(bytecode::Value::VBool(false), line);
             },
         }
+    }
+    fn get_var_stack_loc(&mut self, var: &String) -> (u8, u8) {
+        let l = self.var_stack.len() - 1;
+        let mut i: i64 = (self.var_stack.len() - 1) as i64;
+        while i >= 0 {
+            if let Some(x) = self.var_stack[i as usize].get(var) {
+                return (*x as u8, (l - (i as usize)) as u8)
+            }
+            i -= 1;
+        }
+        panic!("Var not found: {}", var);
     }
 }

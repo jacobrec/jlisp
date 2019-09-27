@@ -99,9 +99,6 @@ fn disassemble_inner(c: &Chunk, i: usize) {
 
 pub fn disassemble_instruction(c: &Chunk, i: usize) -> usize{
     match c.code[i] {
-        Op::Return | Op::Add | Op::Subtract | Op::Multiply | Op::Divide | Op::Negate | Op::Car | Op::Cdr | Op::Cons | Op::Store | Op::Load | Op::Discard1 => {
-            disassemble_simple(c.code[i], c.get_line(i), i); 1
-        },
         Op::Equal | Op::Less | Op::Greater | Op::GreaterEqual | Op::LessEqual | Op::Discard => {
             disassemble_with_data1(c.code[i], c.get_line(i), i, c.code[i+1].to_lit()); 2
         },
@@ -111,7 +108,12 @@ pub fn disassemble_instruction(c: &Chunk, i: usize) -> usize{
         Op::Jump | Op::JumpTrue => {
             disassemble_with_data1(c.code[i], c.get_line(i), i, c.code[i+1].to_lit()); 2
         },
-        _ => { println!("Op not found {}", c.code[i].to_lit()); 0 }
+        Op::Load => {
+            disassemble_with_data2(c.code[i], c.get_line(i), i, c.code[i+1].to_lit(), c.code[i+2].to_lit()); 3
+        },
+        _ => {
+            disassemble_simple(c.code[i], c.get_line(i), i); 1
+        },
     }
 }
 
@@ -130,6 +132,13 @@ fn disassemble_simple(o: Op, line: usize, loc: usize) {
 fn disassemble_with_data1(o: Op, line: usize, loc: usize, data: u8) {
     disassemble_op(o, line, loc);
     print!(": {}", data);
+    println!();
+}
+
+fn disassemble_with_data2(o: Op, line: usize, loc: usize, data: u8, data2: u8) {
+    disassemble_op(o, line, loc);
+    print!(": {}", data);
+    print!(": {}", data2);
     println!();
 }
 
