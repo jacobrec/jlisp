@@ -85,6 +85,6 @@ impl Evaluator {
             }
             i -= 1;
         }
-        panic!("Var not found: {}", var);
+        panic!("Var not found: [{}]", var);
     }
 }

@@ -34,6 +34,7 @@ pub enum Op {
 
     Load,
     Store,
+    Set,
 
     CreateFrame,
     DropFrame,

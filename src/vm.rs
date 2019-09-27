@@ -16,7 +16,7 @@ pub struct VM {
     pub c: Chunk,
     ip: usize,
     stack: Vec<Value>,
-    stackFrames: Vec<usize>,
+    stack_frames: Vec<usize>,
 }
 
 
@@ -26,7 +26,7 @@ pub fn new(c: Chunk) -> VM {
         c: c,
         ip: 0,
         stack: Vec::new(),
-        stackFrames: Vec::new(),
+        stack_frames: Vec::new(),
     }
 }
 
@@ -145,19 +145,25 @@ impl VM {
                 Op::Load => {
                     let loc = self.get_data();
                     let stack_back = self.get_data();
-                    self.stack.push(self.stack[(loc as usize) + self.stackFrames[stack_back as usize]].clone());
+                    self.stack.push(self.stack[(loc as usize) + self.stack_frames[stack_back as usize]].clone());
+                },
+                Op::Set => {
+                    let loc = self.get_data();
+                    let stack_back = self.get_data();
+                    self.stack[(loc as usize) + self.stack_frames[stack_back as usize]] = self.stack.pop().expect("Empty Stack");
+                    self.stack.push(self.stack[(loc as usize) + self.stack_frames[stack_back as usize]].clone());
                 },
 
                 Op::CreateFrame => {
-                    self.stackFrames.push(self.stack.len());
+                    self.stack_frames.push(self.stack.len());
                 },
                 Op::DropFrame => {
-                    let s = self.stackFrames.pop().expect("Empty stackframes");
+                    let s = self.stack_frames.pop().expect("Empty stackframes");
                     self.stack.truncate(s);
                 },
                 Op::DropFrameSaveReturn => {
                     let v = self.stack.pop().expect("Empty stack");
-                    let s = self.stackFrames.pop().expect("Empty stackframes");
+                    let s = self.stack_frames.pop().expect("Empty stackframes");
                     self.stack.truncate(s);
                     self.stack.push(v);
                 },

@@ -4,8 +4,8 @@
 - [x] if: `(if true 1 2)`
 - [x] quote: `(quote (1 2 3))` <!-- literal form of next s-exp -->
 - [x] do: `(do expr*)`
-- [ ] def: `(def name val)` <!-- Defined only in the current scope -->
-- [ ] set: `(set name val)`
+- [x] def: `(def name val)` <!-- Defined only in the current scope -->
+- [x] set: `(set name val)`
 - [ ] function: `(function (arg*) return)`
 - [ ] defmacro: `(macro name func)`
 
@@ -15,6 +15,7 @@
 - [x] +-*/: overloaded
 - [ ] open/close: for files
 - [ ] open/close/bind: for sockets
+- [ ] somthing: for threads
 
 
 ## Macro forms

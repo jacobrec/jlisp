@@ -29,6 +29,7 @@ pub fn get_inlines() -> HashMap<String, InlineType> {
     funs.insert(String::from("quote"), quote_inline as InlineType);
     funs.insert(String::from("do"), do_inline as InlineType);
     funs.insert(String::from("def"), def_inline as InlineType);
+    funs.insert(String::from("set"), set_inline as InlineType);
 
     funs
 }
@@ -172,6 +173,22 @@ fn def_inline(eve: &mut super::Evaluator, ast: &ast::List<ast::Atom>) {
         panic!("def first argument must be an l-value");
     }
     eve.chunk.add_op(bytecode::Op::Store, SAME_LINE);
+    return;
+}
+
+fn set_inline(eve: &mut super::Evaluator, ast: &ast::List<ast::Atom>) {
+    if ast.len() != 3 {
+        panic!("set needs to have exactly 2 arguments");
+    }
+    eve.eval_atom(ast.head().expect(""), SAME_LINE);
+    if let ast::Atom::AIdentifier(s) = ast.tail().head().expect("") {
+        let (loc, stack_back) = eve.get_var_stack_loc(s);
+        eve.chunk.add_op(bytecode::Op::Set, SAME_LINE);
+        eve.chunk.add_op(bytecode::Op::from_lit(loc), SAME_LINE);
+        eve.chunk.add_op(bytecode::Op::from_lit(stack_back), SAME_LINE);
+    } else {
+        panic!("def first argument must be an l-value");
+    }
     return;
 }
 
